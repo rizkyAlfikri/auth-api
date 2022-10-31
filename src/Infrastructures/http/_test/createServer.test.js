@@ -17,12 +17,28 @@ describe('HTTP server', () => {
         const server = await createServer({});
         // Action
         const response = await server.inject({
-          method: 'GET',
-          url: '/unregisteredRoute',
+            method: 'GET',
+            url: '/unregisteredRoute',
         });
         // Assert
         expect(response.statusCode).toEqual(404);
-      });
+    });
+
+    describe('when GET /', () => {
+        it('should return 200 and hello world', async () => {
+            // Arrange
+            const server = await createServer({});
+            // Action
+            const response = await server.inject({
+                method: 'GET',
+                url: '/',
+            });
+            // Assert
+            const responseJson = JSON.parse(response.payload);
+            expect(response.statusCode).toEqual(200);
+            expect(responseJson.value).toEqual('Hello world!');
+        });
+    });
 
     describe('when POST /users', () => {
         it('should response 201 and persisted user', async () => {
@@ -100,7 +116,7 @@ describe('HTTP server', () => {
                 password: 'secret',
                 fullname: 'Dicoding Indonesia',
             };
-            const server = await createServer(container) ;
+            const server = await createServer(container);
 
             // action
             const response = await server.inject({
@@ -139,9 +155,9 @@ describe('HTTP server', () => {
             expect(responseJson.message).toEqual('tidak dapat membuat user baru karena username mengandung karakter terlarang');
         });
 
-        it('should response 400 when username unavailable', async() => {
+        it('should response 400 when username unavailable', async () => {
             // arrange
-            await UsersTableTestHelper.addUser({username: 'dicoding'});
+            await UsersTableTestHelper.addUser({ username: 'dicoding' });
             const requestPayload = {
                 username: "dicoding",
                 fullname: 'Dicoding Indonesia',
